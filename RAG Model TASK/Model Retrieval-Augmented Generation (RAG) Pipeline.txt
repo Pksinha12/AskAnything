@@ -1,0 +1,27 @@
+**Model: Retrieval-Augmented Generation (RAG) Pipeline**
+
+For this project, a **RAG (Retrieval-Augmented Generation)** model was employed. RAG combines the power of information retrieval with generative modeling to generate more contextually accurate responses. The pipeline used to implement RAG follows these steps:
+
+1. **RAG Model**: The core model used is based on **Google's Gemma-1.1-7b-it** for generation, integrated into a retrieval pipeline using the Hugging Face Transformers library. This model is pre-trained and designed for natural language generation tasks, capable of producing fluent and accurate text responses.
+
+2. **Retrieval Component**:
+   - Documents (PDFs uploaded) are processed and converted into text using `pdfplumber` or `PyMuPDF`.
+   - The text is then split into chunks using **RecursiveCharacterTextSplitter** for better handling and contextual understanding.
+   - A vector store is created using **FAISS (Facebook AI Similarity Search)**, which indexes document chunks by embedding them into vector representations using **HuggingFaceEmbeddings**.
+   - When a user asks a question, the retriever component searches the FAISS index to find the most relevant chunks of text based on the user query.
+
+3. **Generation Component**:
+   - The relevant document chunks retrieved from FAISS are passed as context to the **Gemma-1.1-7b-it** model.
+   - The model generates an answer by combining the provided context and the user’s query.
+   - This approach used both retrieval (getting accurate and relevant documents) and generation (producing natural language answers), forming the backbone of the RAG architecture.
+
+4. **Quantization and Tokenization**:
+   - The generative model is loaded with **4-bit quantization** via the `BitsAndBytesConfig` for optimized memory usage.
+   - **AutoTokenizer** is used for converting both the retrieved context and user queries into tokens that the model can process.
+   
+5. **Final Pipeline**:
+   - First, the document is embedded into the FAISS vector store.
+   - Upon a query, the most relevant document chunks are retrieved from the vector store.
+   - The retrieved context is passed to the generative model to produce a coherent, context-aware response.
+
+This **RAG pipeline** ensures that the responses are accurate, grounded in the retrieved documents, and can dynamically generate language based on the specific needs of the query. It bridges retrieval with generation, using both for an effective question-answering system.
